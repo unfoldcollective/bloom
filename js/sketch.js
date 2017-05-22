@@ -1,3 +1,27 @@
+// gui params
+var sepals_amount = 6;
+var sepals_radius = 50;
+var sepals_size = 40;
+var sepals_color = [55, 51, 30];
+
+var petals_amount = 8;
+var petals_radius = 150;
+var petals_size = 150;
+var petals_color = [47, 32, 51];
+
+var stamens_amount = 5;
+var stamens_radius = 30;
+var stamens_size = 10;
+var stamens_color = [254, 218, 89];
+
+var carpel_size = 30;
+var carpel_color = [248, 66, 116];
+
+var guiSepals;
+var guiPetals;
+var guiStamens;
+var guiCarpel;
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background(0);
@@ -6,8 +30,40 @@ function setup() {
 
     noStroke();
 
+    // Create Layout GUI
+    guiSepals  = createGui('Sepals');
+    guiPetals  = createGui('Petals');
+    guiStamens = createGui('Stamens');
+    guiCarpel  = createGui('Carpel');
+
+    guiSepals.addGlobals(
+        'sepals_amount',
+        'sepals_radius',
+        'sepals_size',
+        'sepals_color',
+    );
+    guiPetals.addGlobals(
+        'petals_amount',
+        'petals_radius',
+        'petals_size',
+        'petals_color',
+    );
+    guiStamens.addGlobals(
+        'stamens_amount',
+        'stamens_radius',
+        'stamens_size',
+        'stamens_color',
+    );
+    guiCarpel.addGlobals(
+        'carpel_size',
+        'carpel_color',
+    );
+
+
     myFlower = new Flower();
-    myFlower.draw();
+
+    // Don't loop automatically
+    noLoop();
 }
 
 function Flower() {
@@ -15,55 +71,26 @@ function Flower() {
         x: width / 2,
         y: height / 2
     }
-    
-    // Carpel
-    this.carpel = new Carpel(this.position, 50, color(248, 66, 116));
-    
-    // Sepals
-    this.no_sepals = 7;
-    this.sepals_radius = 50;
-    this.sepal_size = 100;
-    this.sepals = [];
-
-    for (var i = 0; i < this.no_sepals; i++) {
-        var pos = getPosOnCircle(this.position, this.sepals_radius, this.no_sepals, i);
-        this.sepals.push( new Sepal(pos, this.sepal_size, color(55, 51, 30)) );
-    }
-
-    // Petals    
-    this.no_petals = 8;
-    this.petals_radius = 140;
-    this.petal_size = 80;
-    this.petals = [];
-
-    for (var i = 0; i < this.no_petals; i++) {
-        var pos = getPosOnCircle(this.position, this.petals_radius, this.no_petals, i);
-        this.petals.push( new Petal(pos, this.petal_size, color(47, 32, 51)) );
-    }
-    
-    // Stamens
-    this.no_stamens = 6;
-    this.stamens_radius = 30;
-    this.stamen_size = 10;
-    this.stamens = [];
-
-    for (var i = 0; i < this.no_stamens; i++) {
-        var pos = getPosOnCircle(this.position, this.stamens_radius, this.no_stamens, i);
-        this.stamens.push( new Stamen(pos, this.stamen_size, color(254, 218, 89)) );
-    }
 
     // Draw Flower
     this.draw = function () {
-        for (var i = 0; i < this.sepals.length; i++) {
-            this.sepals[i].draw();
+
+        for (var i = 0; i < sepals_amount; i++) {
+            var pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
+            draw_sepal(pos, sepals_size, sepals_color);
         }
-        for (var i = 0; i < this.petals.length; i++) {
-            this.petals[i].draw();
+
+        for (var i = 0; i < petals_amount; i++) {
+            var pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
+            draw_petal(pos, petals_size, petals_color);
         }
-        for (var i = 0; i < this.stamens.length; i++) {
-            this.stamens[i].draw();
+
+        for (var i = 0; i < stamens_amount; i++) {
+            var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
+            draw_stamen(pos, stamens_size, stamens_color);
         }
-        this.carpel.draw();
+
+        draw_carpel(this.position, carpel_size, carpel_color);
     }
 }
 
@@ -75,55 +102,32 @@ function getPosOnCircle(midPosition, radius, n, index) {
     }
 }
 
-function Carpel(position, radius, color) {
-    this.position = position;
-    this.radius = radius;
-    this.color = color;
-
-    this.draw = function () {
-        fill(this.color);
-        ellipse(this.position.x, this.position.y, this.radius, this.radius);
-    }
+function draw_carpel(position, radius, color) {
+    fill(color);
+    ellipse(position.x, position.y, radius, radius);
 }
 
-function Sepal(position, size, color) {
-    this.position = position;
-    this.size = size;
-    this.color = color;
-
-    this.draw = function () {
-        console.log("draw sepal");
-        fill(this.color);
-        ellipse(this.position.x, this.position.y, this.size, this.size);
-    }
+function draw_sepal(position, size, color) {
+    console.log("draw_sepal");
+    fill(color);
+    ellipse(position.x, position.y, size, size);
 }
 
-function Petal(position, size, color) {
-    this.position = position;
-    this.size = size;
-    this.color = color;
-
-    this.draw = function () {
-        console.log("draw petal");
-        fill(this.color);
-        ellipse(this.position.x, this.position.y, this.size, this.size);
-    }
+function draw_petal(position, size, color) {
+    fill(color);
+    ellipse(position.x, position.y, size, size);
 }
 
-function Stamen(position, size, color) {
-    this.position = position;
-    this.size = size;
-    this.color = color;
-
-    this.draw = function () {
-        console.log("draw stamen");
-        fill(this.color);
-        ellipse(this.position.x, this.position.y, this.size, this.size);
-    }
+function draw_stamen(position, size, color) {
+    fill(color);
+    ellipse(position.x, position.y, size, size);
 }
 
 function draw() {
+    clear();
+    background(0);
 
+    myFlower.draw();
 }
 
 function windowResized() {
