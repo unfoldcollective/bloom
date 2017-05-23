@@ -14,7 +14,9 @@ var stamens_radius = 30;
 var stamens_size = 10;
 var stamens_color = [254, 218, 89];
 
-var carpel_size = 30;
+var carpel_amount = 3;
+var carpel_radius = 10;
+var carpel_size = 20;
 var carpel_color = [248, 66, 116];
 
 var guiSepals;
@@ -55,6 +57,8 @@ function setup() {
         'stamens_color',
     );
     guiCarpel.addGlobals(
+        'carpel_amount',
+        'carpel_radius',
         'carpel_size',
         'carpel_color',
     );
@@ -90,7 +94,10 @@ function Flower() {
             draw_stamen(pos, stamens_size, stamens_color);
         }
 
-        draw_carpel(this.position, carpel_size, carpel_color);
+        for (var i = 0; i < carpel_amount; i++) {
+            var pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
+            draw_carpel(pos, carpel_size, carpel_color);
+        }        
     }
 }
 
