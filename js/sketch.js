@@ -37,6 +37,8 @@ var guiPetals;
 var guiStamens;
 var guiCarpel;
 
+var seed = 0.0;
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background(0);
@@ -47,17 +49,20 @@ function setup() {
 
     // Create GUIs
     guiGlobal  = createGui('Global');
-    // guiSepals  = createGui('Sepals');
+    guiSepals  = createGui('Sepals');
     guiPetals  = createGui('Petals');
-    // guiStamens = createGui('Stamens');
+    guiStamens = createGui('Stamens');
     // guiCarpel  = createGui('Carpel');
 
-    // guiSepals.addGlobals(
-    //     'sepals_amount',
-    //     'sepals_radius',
-    //     'sepals_size',
-    //     'sepals_color',
-    // );
+    guiGlobal.addGlobals(
+        'opacity',
+    );
+    guiSepals.addGlobals(
+        'sepals_amount',
+        'sepals_radius',
+        'sepals_size',
+        'sepals_color',
+    );
     guiPetals.addGlobals(
         'petals_amount',
         'petals_radius',
@@ -65,16 +70,12 @@ function setup() {
         'petals_color',
         'petals_nPoints',
     );
-
-    guiGlobal.addGlobals(
-        'opacity',
+    guiStamens.addGlobals(
+        'stamens_amount',
+        'stamens_radius',
+        'stamens_size',
+        'stamens_color',
     );
-    // guiStamens.addGlobals(
-    //     'stamens_amount',
-    //     'stamens_radius',
-    //     'stamens_size',
-    //     'stamens_color',
-    // );
     // guiCarpel.addGlobals(
     //     'carpel_amount',
     //     'carpel_radius',
@@ -113,6 +114,7 @@ function Flower() {
         for (var i = 0; i < stamens_amount; i++) {
             var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
             draw_leaf(pos, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
+            draw_stem(this.position, pos, color_with_alpha(stamens_color, opacity));
         }
 
         for (var i = 0; i < carpel_amount; i++) {
@@ -130,15 +132,25 @@ function getPosOnCircle(midPosition, radius, n, index) {
     }
 }
 
-function draw_leaf(center_position, size, nPoints, color) {
-    console.log("draw_leaf");
-    
+function draw_leaf(center_position, size, nPoints, color) { 
     var positions = _.range(nPoints).map(function(currentValue, index) {
         return getPosOnCircle(center_position, size, nPoints, index);
     });
 
     fill(color);
     drawSplineLoop(positions);
+    noFill();
+}
+
+function draw_stem(fromPos, toPos, color) {
+    stroke(color);
+    curve(noisify(fromPos.x),noisify(fromPos.y),fromPos.x,fromPos.y,toPos.x,toPos.y,noisify(toPos.x),noisify(toPos.y));
+    noStroke();
+}
+
+function noisify(x) {
+    seed += 0.01;
+    return (noise(seed)+0.5) * x;
 }
 
 function draw() {
