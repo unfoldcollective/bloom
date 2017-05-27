@@ -1,4 +1,9 @@
 // gui params
+
+var opacity = 150;
+var opacityMin = 0;
+var opacityMax = 255;
+
 var sepals_amount = 6;
 var sepals_radius = 50;
 var sepals_size = 40;
@@ -40,24 +45,29 @@ function setup() {
 
     noStroke();
 
-    // Create Layout GUI
-    guiSepals  = createGui('Sepals');
+    // Create GUIs
+    guiGlobal  = createGui('Global');
+    // guiSepals  = createGui('Sepals');
     guiPetals  = createGui('Petals');
     // guiStamens = createGui('Stamens');
     // guiCarpel  = createGui('Carpel');
 
-    guiSepals.addGlobals(
-        'sepals_amount',
-        'sepals_radius',
-        'sepals_size',
-        'sepals_color',
-    );
+    // guiSepals.addGlobals(
+    //     'sepals_amount',
+    //     'sepals_radius',
+    //     'sepals_size',
+    //     'sepals_color',
+    // );
     guiPetals.addGlobals(
         'petals_amount',
         'petals_radius',
         'petals_size',
         'petals_color',
         'petals_nPoints',
+    );
+
+    guiGlobal.addGlobals(
+        'opacity',
     );
     // guiStamens.addGlobals(
     //     'stamens_amount',
@@ -71,6 +81,8 @@ function setup() {
     //     'carpel_size',
     //     'carpel_color',
     // );
+
+    set_gui_styles();
 
 
     myFlower = new Flower();
@@ -90,22 +102,22 @@ function Flower() {
 
         for (var i = 0; i < sepals_amount; i++) {
             var pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
-            draw_leaf(pos, sepals_size, sepals_nPoints, sepals_color);
+            draw_leaf(pos, sepals_size, sepals_nPoints, color_with_alpha(sepals_color, opacity));
         }
 
         for (var i = 0; i < petals_amount; i++) {
             var pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
-            draw_leaf(pos, petals_size, petals_nPoints, petals_color);
+            draw_leaf(pos, petals_size, petals_nPoints, color_with_alpha(petals_color, opacity));
         }
 
         for (var i = 0; i < stamens_amount; i++) {
             var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
-            draw_leaf(pos, stamens_size, stamens_nPoints, stamens_color);
+            draw_leaf(pos, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
         }
 
         for (var i = 0; i < carpel_amount; i++) {
             var pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
-            draw_leaf(pos, carpel_size, carpel_nPoints, carpel_color);
+            draw_leaf(pos, carpel_size, carpel_nPoints, color_with_alpha(carpel_color, opacity));
         }        
     }
 }
@@ -149,4 +161,14 @@ function drawSplineLoop(points) {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+}
+
+function color_with_alpha(original_color_spec, alpha) {
+    var original_color = color(original_color_spec);
+    return color(original_color.levels[0], original_color.levels[1], original_color.levels[2], alpha)
+}
+
+function set_gui_styles() {
+    $( "div.qs_title_bar:contains('Global')" ).parent().css({"left": "initial", "right":"20px"});
+
 }
