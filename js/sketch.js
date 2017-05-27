@@ -3,6 +3,7 @@ var sepals_amount = 6;
 var sepals_radius = 50;
 var sepals_size = 40;
 var sepals_color = [55, 51, 30];
+var sepals_nPoints = 5;
 
 var petals_amount = 8;
 var petals_radius = 150;
@@ -14,11 +15,13 @@ var stamens_amount = 5;
 var stamens_radius = 30;
 var stamens_size = 10;
 var stamens_color = [254, 218, 89];
+var stamens_nPoints = 5;
 
 var carpel_amount = 3;
 var carpel_radius = 10;
 var carpel_size = 20;
 var carpel_color = [248, 66, 116];
+var carpel_nPoints = 9;
 
 var guiSepals;
 var guiPetals;
@@ -83,22 +86,22 @@ function Flower() {
 
         for (var i = 0; i < sepals_amount; i++) {
             var pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
-            draw_sepal(pos, sepals_size, sepals_color);
+            draw_leaf(pos, sepals_size, sepals_nPoints, sepals_color);
         }
 
         for (var i = 0; i < petals_amount; i++) {
             var pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
-            draw_petal(pos, petals_size, petals_nPoints, petals_color);
+            draw_leaf(pos, petals_size, petals_nPoints, petals_color);
         }
 
         for (var i = 0; i < stamens_amount; i++) {
             var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
-            draw_stamen(pos, stamens_size, stamens_color);
+            draw_leaf(pos, stamens_size, stamens_nPoints, stamens_color);
         }
 
         for (var i = 0; i < carpel_amount; i++) {
             var pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
-            draw_carpel(pos, carpel_size, carpel_color);
+            draw_leaf(pos, carpel_size, carpel_nPoints, carpel_color);
         }        
     }
 }
@@ -111,43 +114,15 @@ function getPosOnCircle(midPosition, radius, n, index) {
     }
 }
 
-function draw_carpel(position, radius, color) {
-    fill(color);
-    ellipse(position.x, position.y, radius, radius);
-}
-
-function draw_sepal(position, size, color) {
-    console.log("draw_sepal");
-    fill(color);
-    ellipse(position.x, position.y, size, size);
-}
-
-function draw_petal(position, size, nPoints, color) {
-    console.log("draw_petal");
+function draw_leaf(center_position, size, nPoints, color) {
+    console.log("draw_leaf");
     
-    // fill(255,0,0);
-    // ellipse(position.x, position.y, size, size);
-
-    // noFill();
-    fill(color[0],color[1],color[2], 180);
-
-    var positions = _.range(nPoints).map(function(currentValue, index, array) {
-        return getPosOnCircle(position, size, nPoints, index);
+    var positions = _.range(nPoints).map(function(currentValue, index) {
+        return getPosOnCircle(center_position, size, nPoints, index);
     });
 
-    
-    drawSplineLoop(positions);
-
-    // positions.map(function(currentValue, index, array) {
-    //     ellipse(currentValue.x, currentValue.y, 50, 50);
-    // });
-
-
-}
-
-function draw_stamen(position, size, color) {
     fill(color);
-    ellipse(position.x, position.y, size, size);
+    drawSplineLoop(positions);
 }
 
 function draw() {
