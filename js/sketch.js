@@ -10,6 +10,10 @@ var petals_radius = 150;
 var petals_size = 150;
 var petals_color = [47, 32, 51];
 var petals_nPoints = 5;
+// slider range
+var petals_radiusMin = 0;
+var petals_radiusMax = 500;
+
 
 var stamens_amount = 5;
 var stamens_radius = 30;
