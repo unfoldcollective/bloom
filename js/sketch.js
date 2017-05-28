@@ -3,6 +3,7 @@
 var opacity = 200;
 var opacityMin = 0;
 var opacityMax = 255;
+var background_color = '#000000';
 
 var sepals_amount = 6;
 var sepals_radius = 50;
@@ -59,7 +60,7 @@ var noiseFactorStep = 0.1;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(0);
+    background(background_color);
     frameRate(30);
     smooth();
 
@@ -76,6 +77,7 @@ function setup() {
         'opacity',
         'seedDelta',
         'noiseFactor',
+        'background_color',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -201,7 +203,7 @@ function noisify(x, scale) {
 
 function draw() {
     clear();
-    background(0);
+    background(background_color);
 
     myFlower.draw();
 }
