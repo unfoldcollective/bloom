@@ -37,7 +37,13 @@ var guiPetals;
 var guiStamens;
 var guiCarpel;
 
+// Steps of 0.005-0.03 work best for most applications
 var seed = 0.0;
+var seedDelta = 0.01;
+var seedDeltaMin = 0.001;
+var seedDeltaMax = 0.1;
+var seedDeltaStep = 0.001;
+
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -56,6 +62,7 @@ function setup() {
 
     guiGlobal.addGlobals(
         'opacity',
+        'seedDelta',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -113,6 +120,7 @@ function Flower() {
 
         for (var i = 0; i < stamens_amount; i++) {
             var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
+            pos = noisify_pos(pos, stamens_radius);
             draw_leaf(pos, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
             draw_stem(this.position, pos, color_with_alpha(stamens_color, opacity));
         }
@@ -144,13 +152,26 @@ function draw_leaf(center_position, size, nPoints, color) {
 
 function draw_stem(fromPos, toPos, color) {
     stroke(color);
-    curve(noisify(fromPos.x),noisify(fromPos.y),fromPos.x,fromPos.y,toPos.x,toPos.y,noisify(toPos.x),noisify(toPos.y));
+    var d = dist(fromPos.x, fromPos.y, toPos.x, toPos.y);
+    curve(
+        noisify_pos(fromPos, d).x, noisify_pos(fromPos, d).y, 
+        fromPos.x, fromPos.y, 
+        toPos.x, toPos.y, 
+        noisify_pos(toPos, d).x, noisify_pos(toPos, d).y
+    );
     noStroke();
 }
 
-function noisify(x) {
+function noisify_pos(pos, scale) {
+    return {
+        x: noisify(pos.x, scale),
+        y: noisify(pos.y, scale)
+    }
+}
+
+function noisify(x, scale) {
     seed += 0.01;
-    return (noise(seed)+0.5) * x;
+    return x + (noise(seed)-0.5) * scale;
 }
 
 function draw() {
