@@ -116,10 +116,7 @@ function setup() {
 }
 
 function Flower() {
-    this.position = {
-        x: width / 2,
-        y: height / 2
-    }
+    this.position = createVector(width / 2, height / 2);
 
     // Draw Flower
     this.draw = function () {
@@ -150,10 +147,10 @@ function Flower() {
 
 function getPosOnCircle(midPosition, radius, n, index) {
     var angle = index * TWO_PI / n;
-    return {
-        x: midPosition.x + radius * cos(angle),
-        y: midPosition.y + radius * sin(angle),
-    }
+    return createVector(
+        midPosition.x + radius * cos(angle), 
+        midPosition.y + radius * sin(angle)
+    );
 }
 
 function draw_leaf(center_pos, base_pos, size, nPoints, color) { 
