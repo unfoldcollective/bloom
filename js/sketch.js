@@ -1,6 +1,6 @@
 // gui params
 
-var opacity = 150;
+var opacity = 200;
 var opacityMin = 0;
 var opacityMax = 255;
 
@@ -13,7 +13,7 @@ var sepals_nPoints = 5;
 var petals_amount = 8;
 var petals_radius = 150;
 var petals_size = 150;
-var petals_color = [47, 32, 51];
+var petals_color = '#6F4979'; //[47, 32, 51];
 var petals_nPoints = 5;
 // slider range
 var petals_radiusMin = 0;
@@ -43,6 +43,10 @@ var seedDelta = 0.01;
 var seedDeltaMin = 0.001;
 var seedDeltaMax = 0.1;
 var seedDeltaStep = 0.001;
+var noiseFactor = 1;
+var noiseFactorMin = 0;
+var noiseFactorMax = 10;
+var noiseFactorStep = 0.1;
 
 
 function setup() {
@@ -63,6 +67,7 @@ function setup() {
     guiGlobal.addGlobals(
         'opacity',
         'seedDelta',
+        'noiseFactor',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -110,24 +115,24 @@ function Flower() {
 
         for (var i = 0; i < sepals_amount; i++) {
             var pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
-            draw_leaf(pos, sepals_size, sepals_nPoints, color_with_alpha(sepals_color, opacity));
+            draw_leaf(pos, this.position, sepals_size, sepals_nPoints, color_with_alpha(sepals_color, opacity));
         }
 
         for (var i = 0; i < petals_amount; i++) {
             var pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
-            draw_leaf(pos, petals_size, petals_nPoints, color_with_alpha(petals_color, opacity));
+            draw_leaf(pos, this.position, petals_size, petals_nPoints, color_with_alpha(petals_color, opacity));
         }
 
         for (var i = 0; i < stamens_amount; i++) {
-            var pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
-            pos = noisify_pos(pos, stamens_radius);
-            draw_leaf(pos, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
-            draw_stem(this.position, pos, color_with_alpha(stamens_color, opacity));
+            var center_pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
+            var center_pos_noisified = noisify_pos(center_pos, stamens_radius);
+            draw_stem(this.position, center_pos_noisified, color_with_alpha(stamens_color, opacity));
+            draw_leaf(center_pos_noisified, center_pos_noisified, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
         }
 
         for (var i = 0; i < carpel_amount; i++) {
             var pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
-            draw_leaf(pos, carpel_size, carpel_nPoints, color_with_alpha(carpel_color, opacity));
+            draw_leaf(pos, this.position, carpel_size, carpel_nPoints, color_with_alpha(carpel_color, opacity));
         }        
     }
 }
@@ -140,10 +145,23 @@ function getPosOnCircle(midPosition, radius, n, index) {
     }
 }
 
-function draw_leaf(center_position, size, nPoints, color) { 
-    var positions = _.range(nPoints).map(function(currentValue, index) {
-        return getPosOnCircle(center_position, size, nPoints, index);
-    });
+function draw_leaf(center_pos, base_pos, size, nPoints, color) { 
+    var positions = 
+        _.range(nPoints)
+        .map(function(value, index) {
+            return getPosOnCircle(center_pos, size, nPoints, index);
+        })
+        .map(function(value, index) {
+            return noisify_pos(value, size);
+        });
+    
+    var closest_index_to_base_pos = positions.reduce(function(prevVal, elem, index, array) {
+        prevDistance = dist(array[prevVal].x, array[prevVal].y, base_pos.x, base_pos.y);
+        curDistance  = dist(elem.x, elem.y, base_pos.x, base_pos.y);
+        return prevDistance < curDistance ? prevVal : index;
+    }, 0);
+    
+    positions[closest_index_to_base_pos] = base_pos;
 
     fill(color);
     drawSplineLoop(positions);
@@ -171,7 +189,7 @@ function noisify_pos(pos, scale) {
 
 function noisify(x, scale) {
     seed += 0.01;
-    return x + (noise(seed)-0.5) * scale;
+    return x + (noise(seed)-0.5) * noiseFactor * scale;
 }
 
 function draw() {
