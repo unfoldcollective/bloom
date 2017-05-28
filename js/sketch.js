@@ -134,8 +134,10 @@ function Flower() {
         for (var i = 0; i < stamens_amount; i++) {
             var center_pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
             var center_pos_noisified = noisify_pos(center_pos, stamens_radius);
-            draw_stem(this.position, center_pos_noisified, color_with_alpha(stamens_color, opacity));
-            draw_leaf(center_pos_noisified, center_pos_noisified, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
+            var center_pos_closer = p5.Vector.lerp(center_pos_noisified, this.position, stamens_size/stamens_radius);
+            
+            draw_stem(this.position, center_pos_closer, color_with_alpha(stamens_color, opacity));
+            draw_leaf(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
         }
 
         for (var i = 0; i < carpel_amount; i++) {
@@ -189,10 +191,7 @@ function draw_stem(fromPos, toPos, color) {
 }
 
 function noisify_pos(pos, scale) {
-    return {
-        x: noisify(pos.x, scale),
-        y: noisify(pos.y, scale)
-    }
+    return createVector( noisify(pos.x, scale), noisify(pos.y, scale) );
 }
 
 function noisify(x, scale) {
