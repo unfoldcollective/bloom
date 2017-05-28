@@ -9,12 +9,16 @@ var sepals_radius = 50;
 var sepals_size = 40;
 var sepals_color = [55, 51, 30];
 var sepals_nPoints = 5;
+var sepals_nPointsMin = 3;
+var sepals_nPointsMax = 10;
 
 var petals_amount = 8;
 var petals_radius = 150;
 var petals_size = 150;
 var petals_color = '#6F4979'; //[47, 32, 51];
 var petals_nPoints = 5;
+var petals_nPointsMin = 3;
+var petals_nPointsMax = 10;
 // slider range
 var petals_radiusMin = 0;
 var petals_radiusMax = 500;
@@ -25,12 +29,16 @@ var stamens_radius = 30;
 var stamens_size = 10;
 var stamens_color = [254, 218, 89];
 var stamens_nPoints = 5;
+var stamens_nPointsMin = 3;
+var stamens_nPointsMax = 10;
 
 var carpel_amount = 3;
 var carpel_radius = 10;
 var carpel_size = 20;
 var carpel_color = [248, 66, 116];
 var carpel_nPoints = 9;
+var carpel_nPointsMin = 3;
+var carpel_nPointsMax = 10;
 
 var guiSepals;
 var guiPetals;
@@ -74,6 +82,7 @@ function setup() {
         'sepals_radius',
         'sepals_size',
         'sepals_color',
+        'sepals_nPoints',
     );
     guiPetals.addGlobals(
         'petals_amount',
@@ -87,12 +96,14 @@ function setup() {
         'stamens_radius',
         'stamens_size',
         'stamens_color',
+        'stamens_nPoints',
     );
     // guiCarpel.addGlobals(
     //     'carpel_amount',
     //     'carpel_radius',
     //     'carpel_size',
     //     'carpel_color',
+    //     'carpel_nPoints',
     // );
 
     set_gui_styles();
