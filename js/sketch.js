@@ -69,8 +69,8 @@ function setup() {
     // Create GUIs
     guiGlobal  = createGui('Global');
     guiSepals  = createGui('Sepals');
-    guiPetals  = createGui('Petals');
     guiStamens = createGui('Stamens');
+    guiPetals  = createGui('Petals');
     // guiCarpel  = createGui('Carpel');
 
     guiGlobal.addGlobals(
@@ -124,27 +124,36 @@ function Flower() {
     this.draw = function () {
 
         for (var i = 0; i < sepals_amount; i++) {
-            var pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
-            draw_leaf(pos, this.position, sepals_size, sepals_nPoints, color_with_alpha(sepals_color, opacity));
+            var center_pos = getPosOnCircle(this.position, sepals_radius, sepals_amount, i);
+            var sepals_positions = get_leaf_positions(center_pos, this.position, sepals_size, sepals_nPoints);
+
+            draw_leaf_from_pos(sepals_positions, color_with_alpha(sepals_color, opacity));
         }
 
         for (var i = 0; i < petals_amount; i++) {
-            var pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
-            draw_leaf(pos, this.position, petals_size, petals_nPoints, color_with_alpha(petals_color, opacity));
+            var center_pos = getPosOnCircle(this.position, petals_radius, petals_amount, i);
+            var petal_positions1 = get_leaf_positions(center_pos, this.position, petals_size, petals_nPoints);
+            var petal_positions2 = get_leaf_positions(center_pos, this.position, petals_size*0.5, petals_nPoints);
+            
+            draw_leaf_from_pos(petal_positions1, color_with_alpha(petals_color, opacity));
+            draw_leaf_from_pos(petal_positions2, color_with_alpha(carpel_color, opacity));
         }
 
         for (var i = 0; i < stamens_amount; i++) {
             var center_pos = getPosOnCircle(this.position, stamens_radius, stamens_amount, i);
             var center_pos_noisified = noisify_pos(center_pos, stamens_radius);
             var center_pos_closer = p5.Vector.lerp(center_pos_noisified, this.position, stamens_size/stamens_radius);
+            var stamens_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints);
             
             draw_stem(this.position, center_pos_closer, color_with_alpha(stamens_color, opacity));
-            draw_leaf(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints, color_with_alpha(stamens_color, opacity));
+            draw_leaf_from_pos(stamens_positions, color_with_alpha(stamens_color, opacity));
         }
 
         for (var i = 0; i < carpel_amount; i++) {
-            var pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
-            draw_leaf(pos, this.position, carpel_size, carpel_nPoints, color_with_alpha(carpel_color, opacity));
+            var center_pos = getPosOnCircle(this.position, carpel_radius, carpel_amount, i);
+            var carpel_positions = get_leaf_positions(center_pos, this.position, carpel_size, carpel_nPoints);
+
+            draw_leaf_from_pos(carpel_positions, color_with_alpha(carpel_color, opacity));
         }        
     }
 }
@@ -155,6 +164,33 @@ function getPosOnCircle(midPosition, radius, n, index) {
         midPosition.x + radius * cos(angle), 
         midPosition.y + radius * sin(angle)
     );
+}
+
+function get_leaf_positions(center_pos, base_pos, size, nPoints) {
+    var positions = 
+        _.range(nPoints)
+        .map(function(value, index) {
+            return getPosOnCircle(center_pos, size, nPoints, index);
+        })
+        .map(function(value, index) {
+            return noisify_pos(value, size);
+        });
+    
+    var closest_index_to_base_pos = positions.reduce(function(prevVal, elem, index, array) {
+        prevDistance = dist(array[prevVal].x, array[prevVal].y, base_pos.x, base_pos.y);
+        curDistance  = dist(elem.x, elem.y, base_pos.x, base_pos.y);
+        return prevDistance < curDistance ? prevVal : index;
+    }, 0);
+    
+    positions[closest_index_to_base_pos] = base_pos;
+
+    return positions;
+}
+
+function draw_leaf_from_pos(positions, color) {
+    fill(color);
+    drawSplineLoop(positions);
+    noFill();    
 }
 
 function draw_leaf(center_pos, base_pos, size, nPoints, color) { 
