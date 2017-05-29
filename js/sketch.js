@@ -17,6 +17,7 @@ var petals_amount = 8;
 var petals_radius = 150;
 var petals_size = 150;
 var petals_color = '#6F4979'; //[47, 32, 51];
+var petals_color2 = '#BF4979'; //[47, 32, 51];
 var petals_nPoints = 5;
 var petals_nPointsMin = 3;
 var petals_nPointsMax = 10;
@@ -91,6 +92,7 @@ function setup() {
         'petals_radius',
         'petals_size',
         'petals_color',
+        'petals_color2',
         'petals_nPoints',
     );
     guiStamens.addGlobals(
@@ -160,7 +162,7 @@ function Flower() {
                 return get_leaf_positions(value, flower_position, petals_size * 0.5, petals_nPoints);
             })
             .map(function(value, index) {
-                draw_leaf_from_pos(value, color_with_alpha(carpel_color, opacity));
+                draw_leaf_from_pos(value, color_with_alpha(petals_color2, opacity));
                 return value;
             });
 
