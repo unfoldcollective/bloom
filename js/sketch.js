@@ -4,6 +4,10 @@ var opacity = 200;
 var opacityMin = 0;
 var opacityMax = 255;
 var background_color = '#000000';
+var rotation = 0;
+var rotationMin = 0;
+var rotationMax = 2 * Math.PI;
+var rotationStep = 0.01 * Math.PI;
 
 var sepals_amount = 6;
 var sepals_radius = 50;
@@ -90,6 +94,7 @@ function setup() {
         'opacity',
         'seedDelta',
         'background_color',
+        'rotation',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -145,7 +150,8 @@ function Flower() {
         var sepals_positions = 
             _.range(sepals_amount)
             .map(function(value, index) {
-                return getPosOnCircle(flower_position, sepals_radius, sepals_amount, index);
+                var sepals_rotation = rotation + Math.PI / sepals_amount;
+                return getPosOnCircle(flower_position, sepals_radius, sepals_rotation, sepals_amount, index);
             })
             .map(function(value, index) {
                 return get_leaf_positions(value, flower_position, sepals_size, sepals_nPoints, sepals_noiseFactor);
@@ -160,7 +166,7 @@ function Flower() {
             _.range(petals_amount)
             .map(function(value, index) {
                 console.log(flower_position);
-                return getPosOnCircle(flower_position, petals_radius, petals_amount, index);
+                return getPosOnCircle(flower_position, petals_radius, rotation, petals_amount, index);
             });
 
         var petal_positions1 = petals_center_positions
@@ -184,7 +190,7 @@ function Flower() {
         var stamens_positions = 
             _.range(stamens_amount)
             .map(function(value, index) {
-                return getPosOnCircle(flower_position, stamens_radius, stamens_amount, index);
+                return getPosOnCircle(flower_position, stamens_radius, rotation, stamens_amount, index);
             })
             .map(function(value, index) {
                 var center_pos_noisified = noisify_pos(value, stamens_radius, stamens_noiseFactor);
@@ -199,7 +205,7 @@ function Flower() {
         var carpel_positions = 
             _.range(carpel_amount)
             .map(function(value, index) {
-                return getPosOnCircle(flower_position, carpel_radius, carpel_amount, index);
+                return getPosOnCircle(flower_position, carpel_radius, rotation, carpel_amount, index);
             })
             .map(function(value, index) {
                 return get_leaf_positions(value, flower_position, carpel_size, carpel_nPoints, carpel_noiseFactor);
@@ -211,8 +217,8 @@ function Flower() {
     }
 }
 
-function getPosOnCircle(midPosition, radius, n, index) {
-    var angle = index * TWO_PI / n;
+function getPosOnCircle(midPosition, radius, rotation, n, index) {
+    var angle = (index * TWO_PI / n) + rotation;
     return createVector(
         midPosition.x + radius * cos(angle), 
         midPosition.y + radius * sin(angle)
@@ -223,7 +229,7 @@ function get_leaf_positions(center_pos, base_pos, size, nPoints, noiseFactor) {
     var positions = 
         _.range(nPoints)
         .map(function(value, index) {
-            return getPosOnCircle(center_pos, size, nPoints, index);
+            return getPosOnCircle(center_pos, size, rotation, nPoints, index);
         })
         .map(function(value, index) {
             return noisify_pos(value, size, noiseFactor);
@@ -250,7 +256,7 @@ function draw_leaf(center_pos, base_pos, size, nPoints, color, noiseFactor) {
     var positions = 
         _.range(nPoints)
         .map(function(value, index) {
-            return getPosOnCircle(center_pos, size, nPoints, index);
+            return getPosOnCircle(center_pos, size, rotation, nPoints, index);
         })
         .map(function(value, index) {
             return noisify_pos(value, size, noiseFactor);
