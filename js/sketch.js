@@ -8,6 +8,10 @@ var rotation = 0;
 var rotationMin = 0;
 var rotationMax = 2 * Math.PI;
 var rotationStep = 0.01 * Math.PI;
+var progress = 0;
+var progressMin = 0;
+var progressMax = 1;
+var progressStep = 0.01;
 
 var sepals_amount = 6;
 var sepals_radius = 50;
@@ -95,6 +99,7 @@ function setup() {
         'seedDelta',
         'background_color',
         'rotation',
+        'progress',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -151,10 +156,10 @@ function Flower() {
             _.range(sepals_amount)
             .map(function(value, index) {
                 var sepals_rotation = rotation + Math.PI / sepals_amount;
-                return getPosOnCircle(flower_position, sepals_radius, sepals_rotation, sepals_amount, index);
+                return getPosOnCircle(flower_position, progress * sepals_radius, sepals_rotation, sepals_amount, index);
             })
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, sepals_size, sepals_nPoints, sepals_noiseFactor);
+                return get_leaf_positions(value, flower_position, progress * sepals_size, sepals_nPoints, sepals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(sepals_color, opacity));
@@ -166,12 +171,12 @@ function Flower() {
             _.range(petals_amount)
             .map(function(value, index) {
                 console.log(flower_position);
-                return getPosOnCircle(flower_position, petals_radius, rotation, petals_amount, index);
+                return getPosOnCircle(flower_position, progress * petals_radius, rotation, petals_amount, index);
             });
 
         var petal_positions1 = petals_center_positions
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, petals_size, petals_nPoints, petals_noiseFactor);
+                return get_leaf_positions(value, flower_position, progress * petals_size, petals_nPoints, petals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(petals_color, opacity));
@@ -180,7 +185,7 @@ function Flower() {
         
         var petal_positions2 = petals_center_positions
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, petals_size * 0.5, petals_nPoints, petals_noiseFactor);
+                return get_leaf_positions(value, flower_position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(petals_color2, opacity));
@@ -190,12 +195,12 @@ function Flower() {
         var stamens_positions = 
             _.range(stamens_amount)
             .map(function(value, index) {
-                return getPosOnCircle(flower_position, stamens_radius, rotation, stamens_amount, index);
+                return getPosOnCircle(flower_position, progress * stamens_radius, rotation, stamens_amount, index);
             })
             .map(function(value, index) {
-                var center_pos_noisified = noisify_pos(value, stamens_radius, stamens_noiseFactor);
+                var center_pos_noisified = noisify_pos(value, progress * stamens_radius, stamens_noiseFactor);
                 var center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower_position, stamens_size/stamens_radius);
-                var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints, stamens_noiseFactor);
+                var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
 
                 draw_stem(flower_position, center_pos_closer, color_with_alpha(stamens_color, opacity), stamens_noiseFactor);
                 draw_leaf_from_pos(leaf_positions, color_with_alpha(stamens_color, opacity));
@@ -205,10 +210,10 @@ function Flower() {
         var carpel_positions = 
             _.range(carpel_amount)
             .map(function(value, index) {
-                return getPosOnCircle(flower_position, carpel_radius, rotation, carpel_amount, index);
+                return getPosOnCircle(flower_position, progress * carpel_radius, rotation, carpel_amount, index);
             })
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, carpel_size, carpel_nPoints, carpel_noiseFactor);
+                return get_leaf_positions(value, flower_position, progress * carpel_size, carpel_nPoints, carpel_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(carpel_color, opacity));
