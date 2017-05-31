@@ -12,6 +12,10 @@ var sepals_color = [55, 51, 30];
 var sepals_nPoints = 5;
 var sepals_nPointsMin = 3;
 var sepals_nPointsMax = 10;
+var sepals_noiseFactor = 1;
+var sepals_noiseFactorMin = 0;
+var sepals_noiseFactorMax = 10;
+var sepals_noiseFactorStep = 0.1;
 
 var petals_amount = 8;
 var petals_radius = 150;
@@ -24,7 +28,10 @@ var petals_nPointsMax = 10;
 // slider range
 var petals_radiusMin = 0;
 var petals_radiusMax = 500;
-
+var petals_noiseFactor = 1;
+var petals_noiseFactorMin = 0;
+var petals_noiseFactorMax = 10;
+var petals_noiseFactorStep = 0.1;
 
 var stamens_amount = 5;
 var stamens_radius = 30;
@@ -33,6 +40,10 @@ var stamens_color = [254, 218, 89];
 var stamens_nPoints = 5;
 var stamens_nPointsMin = 3;
 var stamens_nPointsMax = 10;
+var stamens_noiseFactor = 1;
+var stamens_noiseFactorMin = 0;
+var stamens_noiseFactorMax = 10;
+var stamens_noiseFactorStep = 0.1;
 
 var carpel_amount = 3;
 var carpel_radius = 10;
@@ -41,6 +52,10 @@ var carpel_color = [248, 66, 116];
 var carpel_nPoints = 9;
 var carpel_nPointsMin = 3;
 var carpel_nPointsMax = 10;
+var carpel_noiseFactor = 1;
+var carpel_noiseFactorMin = 0;
+var carpel_noiseFactorMax = 10;
+var carpel_noiseFactorStep = 0.1;
 
 var guiSepals;
 var guiPetals;
@@ -53,10 +68,7 @@ var seedDelta = 0.01;
 var seedDeltaMin = 0.001;
 var seedDeltaMax = 0.1;
 var seedDeltaStep = 0.001;
-var noiseFactor = 1;
-var noiseFactorMin = 0;
-var noiseFactorMax = 10;
-var noiseFactorStep = 0.1;
+
 
 
 function setup() {
@@ -70,14 +82,13 @@ function setup() {
     // Create GUIs
     guiGlobal  = createGui('Global');
     guiSepals  = createGui('Sepals');
-    guiStamens = createGui('Stamens');
     guiPetals  = createGui('Petals');
-    // guiCarpel  = createGui('Carpel');
+    guiCarpel  = createGui('Carpel');
+    guiStamens = createGui('Stamens');
 
     guiGlobal.addGlobals(
         'opacity',
         'seedDelta',
-        'noiseFactor',
         'background_color',
     );
     guiSepals.addGlobals(
@@ -86,6 +97,7 @@ function setup() {
         'sepals_size',
         'sepals_color',
         'sepals_nPoints',
+        'sepals_noiseFactor',
     );
     guiPetals.addGlobals(
         'petals_amount',
@@ -94,6 +106,7 @@ function setup() {
         'petals_color',
         'petals_color2',
         'petals_nPoints',
+        'petals_noiseFactor',
     );
     guiStamens.addGlobals(
         'stamens_amount',
@@ -101,14 +114,16 @@ function setup() {
         'stamens_size',
         'stamens_color',
         'stamens_nPoints',
+        'stamens_noiseFactor',
     );
-    // guiCarpel.addGlobals(
-    //     'carpel_amount',
-    //     'carpel_radius',
-    //     'carpel_size',
-    //     'carpel_color',
-    //     'carpel_nPoints',
-    // );
+    guiCarpel.addGlobals(
+        'carpel_amount',
+        'carpel_radius',
+        'carpel_size',
+        'carpel_color',
+        'carpel_nPoints',
+        'carpel_noiseFactor',
+    );
 
     set_gui_styles();
 
@@ -133,7 +148,7 @@ function Flower() {
                 return getPosOnCircle(flower_position, sepals_radius, sepals_amount, index);
             })
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, sepals_size, sepals_nPoints);
+                return get_leaf_positions(value, flower_position, sepals_size, sepals_nPoints, sepals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(sepals_color, opacity));
@@ -150,7 +165,7 @@ function Flower() {
 
         var petal_positions1 = petals_center_positions
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, petals_size, petals_nPoints);
+                return get_leaf_positions(value, flower_position, petals_size, petals_nPoints, petals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(petals_color, opacity));
@@ -159,7 +174,7 @@ function Flower() {
         
         var petal_positions2 = petals_center_positions
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, petals_size * 0.5, petals_nPoints);
+                return get_leaf_positions(value, flower_position, petals_size * 0.5, petals_nPoints, petals_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(petals_color2, opacity));
@@ -172,11 +187,11 @@ function Flower() {
                 return getPosOnCircle(flower_position, stamens_radius, stamens_amount, index);
             })
             .map(function(value, index) {
-                var center_pos_noisified = noisify_pos(value, stamens_radius);
+                var center_pos_noisified = noisify_pos(value, stamens_radius, stamens_noiseFactor);
                 var center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower_position, stamens_size/stamens_radius);
-                var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints);
+                var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, stamens_size, stamens_nPoints, stamens_noiseFactor);
 
-                draw_stem(flower_position, center_pos_closer, color_with_alpha(stamens_color, opacity));
+                draw_stem(flower_position, center_pos_closer, color_with_alpha(stamens_color, opacity), stamens_noiseFactor);
                 draw_leaf_from_pos(leaf_positions, color_with_alpha(stamens_color, opacity));
                 return leaf_positions;
             });
@@ -187,7 +202,7 @@ function Flower() {
                 return getPosOnCircle(flower_position, carpel_radius, carpel_amount, index);
             })
             .map(function(value, index) {
-                return get_leaf_positions(value, flower_position, carpel_size, carpel_nPoints);
+                return get_leaf_positions(value, flower_position, carpel_size, carpel_nPoints, carpel_noiseFactor);
             })
             .map(function(value, index) {
                 draw_leaf_from_pos(value, color_with_alpha(carpel_color, opacity));
@@ -204,14 +219,14 @@ function getPosOnCircle(midPosition, radius, n, index) {
     );
 }
 
-function get_leaf_positions(center_pos, base_pos, size, nPoints) {
+function get_leaf_positions(center_pos, base_pos, size, nPoints, noiseFactor) {
     var positions = 
         _.range(nPoints)
         .map(function(value, index) {
             return getPosOnCircle(center_pos, size, nPoints, index);
         })
         .map(function(value, index) {
-            return noisify_pos(value, size);
+            return noisify_pos(value, size, noiseFactor);
         });
     
     var closest_index_to_base_pos = positions.reduce(function(prevVal, elem, index, array) {
@@ -231,14 +246,14 @@ function draw_leaf_from_pos(positions, color) {
     noFill();    
 }
 
-function draw_leaf(center_pos, base_pos, size, nPoints, color) { 
+function draw_leaf(center_pos, base_pos, size, nPoints, color, noiseFactor) { 
     var positions = 
         _.range(nPoints)
         .map(function(value, index) {
             return getPosOnCircle(center_pos, size, nPoints, index);
         })
         .map(function(value, index) {
-            return noisify_pos(value, size);
+            return noisify_pos(value, size, noiseFactor);
         });
     
     var closest_index_to_base_pos = positions.reduce(function(prevVal, elem, index, array) {
@@ -254,23 +269,23 @@ function draw_leaf(center_pos, base_pos, size, nPoints, color) {
     noFill();
 }
 
-function draw_stem(fromPos, toPos, color) {
+function draw_stem(fromPos, toPos, color, noiseFactor) {
     stroke(color);
     var d = dist(fromPos.x, fromPos.y, toPos.x, toPos.y);
     curve(
-        noisify_pos(fromPos, d).x, noisify_pos(fromPos, d).y, 
+        noisify_pos(fromPos, d, noiseFactor).x, noisify_pos(fromPos, d, noiseFactor).y, 
         fromPos.x, fromPos.y, 
         toPos.x, toPos.y, 
-        noisify_pos(toPos, d).x, noisify_pos(toPos, d).y
+        noisify_pos(toPos, d, noiseFactor).x, noisify_pos(toPos, d, noiseFactor).y
     );
     noStroke();
 }
 
-function noisify_pos(pos, scale) {
-    return createVector( noisify(pos.x, scale), noisify(pos.y, scale) );
+function noisify_pos(pos, scale, noiseFactor) {
+    return createVector( noisify(pos.x, scale, noiseFactor), noisify(pos.y, scale, noiseFactor) );
 }
 
-function noisify(x, scale) {
+function noisify(x, scale, noiseFactor) {
     seed += 0.01;
     return x + (noise(seed)-0.5) * noiseFactor * scale;
 }
