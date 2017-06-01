@@ -3,12 +3,22 @@
 var opacity = 200;
 var opacityMin = 0;
 var opacityMax = 255;
-var background_color = '#000000';
+// 89.40919967340356, 99.99999999996794, 98.17219050508594
+var background_hue = 89;
+var background_hueMin = 0;
+var background_hueMax = 360;
+var background_saturation = 100;
+var background_saturationMin = 0;
+var background_saturationMax = 100;
+var background_lightness = 98;
+var background_lightnessMin = 0;
+var background_lightnessMax = 100;
+
 var rotation = 0;
 var rotationMin = 0;
 var rotationMax = 2 * Math.PI;
 var rotationStep = 0.01 * Math.PI;
-var progress = 0;
+var progress = 0.1;
 var progressMin = 0;
 var progressMax = 1;
 var progressStep = 0.01;
@@ -77,11 +87,9 @@ var seedDeltaMin = 0.001;
 var seedDeltaMax = 0.1;
 var seedDeltaStep = 0.001;
 
-
-
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    background(background_color);
+    background(hsluvToP5Rgb(background_hue, background_saturation, background_lightness));
     frameRate(30);
     smooth();
 
@@ -97,9 +105,11 @@ function setup() {
     guiGlobal.addGlobals(
         'opacity',
         'seedDelta',
-        'background_color',
         'rotation',
         'progress',
+        'background_hue',
+        'background_saturation',
+        'background_lightness',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -170,7 +180,6 @@ function Flower() {
         var petals_center_positions = 
             _.range(petals_amount)
             .map(function(value, index) {
-                console.log(flower_position);
                 return getPosOnCircle(flower_position, progress * petals_radius, rotation, petals_amount, index);
             });
 
@@ -303,7 +312,7 @@ function noisify(x, scale, noiseFactor) {
 
 function draw() {
     clear();
-    background(background_color);
+    background(hsluvToP5Rgb(background_hue, background_saturation, background_lightness));
 
     myFlower.draw();
 }
@@ -332,3 +341,24 @@ function set_gui_styles() {
     $( "div.qs_title_bar:contains('Global')" ).parent().css({"left": "initial", "right":"20px"});
 
 }
+
+function hsluvToP5Rgb(h, s, l) {
+    var rgb = hsluv.hsluvToRgb([h, s, l]);
+    return color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+}
+
+function fillHsluv(h, s, l) {
+  var rgb = hsluv.hsluvToRgb([h, s, l]);
+  fill(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+}
+
+function strokeHsluv(h, s, l) {
+  var rgb = hsluv.hsluvToRgb([h, s, l]);
+  stroke(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+}
+
+function backgroundHsluv(h, s, l) {
+  var rgb = hsluv.hsluvToRgb([h, s, l]);
+  background(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+}
+
