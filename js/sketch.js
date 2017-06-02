@@ -15,6 +15,10 @@ var background_lightnessMax = 100;
 var hue_exclude_range = 20;
 var hue_noise_scale = 100;
 var lightness_noise_scale = 20;
+var curve_tightness = 7;
+var curve_tightnessMin = -50;
+var curve_tightnessMax = 50;
+var curve_tightnessStep = 0.1;
 
 var rotation = 0;
 var rotationMin = 0;
@@ -145,6 +149,7 @@ function setup() {
         'background_hue',
         'background_saturation',
         'background_lightness',
+        'curve_tightness',
     );
     guiSepals.addGlobals(
         'sepals_amount',
@@ -201,6 +206,7 @@ function Flower() {
 
     // Draw Flower
     this.draw = function () {
+        curveTightness(curve_tightness)
         var flower = this;
 
         flower.sepals = {};
