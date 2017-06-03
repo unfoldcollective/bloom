@@ -214,6 +214,7 @@ function Flower() {
             background_hue, 
             sepals_c_saturation, 
             sepals_c_lightness,
+            opacity,
         ];
         
         flower.petals = {};
@@ -221,11 +222,13 @@ function Flower() {
             random_hue_excluding(background_hue, hue_exclude_range),
             petals_c_saturation,
             coin_flip(petals_c_lightness, complement_linear(petals_c_lightness, 100)),
+            opacity,
         ];
         flower.petals.color2 = [
             normalise_to_hue(noisify(flower.petals.color1[0], hue_noise_scale, petals_noiseFactor)),
             petals_c_saturation,
             complement_linear(flower.petals.color1[2], 100),
+            opacity,
         ];
 
         flower.carpel = {};
@@ -233,6 +236,7 @@ function Flower() {
             complement_circular(flower.petals.color1[0]),
             carpel_c_saturation,
             carpel_c_lightness,
+            opacity,
         ];
 
         flower.stamens = {};
@@ -240,6 +244,7 @@ function Flower() {
             complement_circular(flower.petals.color1[0]),
             stamens_c_saturation,
             stamens_c_lightness,
+            opacity,
         ];
 
 
@@ -253,8 +258,8 @@ function Flower() {
                 return get_leaf_positions(value, flower.position, progress * sepals_size, sepals_nPoints, sepals_noiseFactor);
             })
             .map(function(value) {
-                var sepals_color = rgb_with_alpha( hsluvToP5Rgb(flower.sepals.color[0], flower.sepals.color[1], flower.sepals.color[2]), opacity);
-                draw_leaf_from_pos(value, sepals_color);
+                // var sepals_color = rgb_with_alpha( hsluvToP5Rgb(flower.sepals.color[0], flower.sepals.color[1], flower.sepals.color[2]), opacity);
+                draw_leaf_from_pos(value, flower.sepals.color);
                 return value;
             });
 
@@ -267,10 +272,10 @@ function Flower() {
             .map(function(value) {
                 var petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size, petals_nPoints, petals_noiseFactor);
                 var petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
-                var petals_color1 = rgb_with_alpha(hsluvToP5Rgb(flower.petals.color1[0], flower.petals.color1[1], flower.petals.color1[2] * 0.6), opacity);
-                var petals_color2 = rgb_with_alpha(hsluvToP5Rgb(flower.petals.color2[0], flower.petals.color2[1], flower.petals.color2[2] * 0.6), opacity);
-                draw_leaf_from_pos(petals_positions1, petals_color1);
-                draw_leaf_from_pos(petals_positions2, petals_color2);
+                var petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], flower.petals.color1[2] * 0.6, flower.petals.color1[3] ];
+                var petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], flower.petals.color2[2] * 0.6, flower.petals.color2[3] ];
+                draw_leaf_from_pos(petals_positions1,  petals_color1);
+                draw_leaf_from_pos(petals_positions2,  petals_color2);
 
             });
 
@@ -284,11 +289,8 @@ function Flower() {
             .map(function(value) {
                 var petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size * 0.7, petals_nPoints, petals_noiseFactor);
                 var petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.35, petals_nPoints, petals_noiseFactor);
-                var petals_color1 = rgb_with_alpha(hsluvToP5Rgb(flower.petals.color1[0], flower.petals.color1[1], flower.petals.color1[2]), opacity);
-                var petals_color2 = rgb_with_alpha(hsluvToP5Rgb(flower.petals.color2[0], flower.petals.color2[1], flower.petals.color2[2]), opacity);
-                
-                draw_leaf_from_pos(petals_positions1, petals_color1);
-                draw_leaf_from_pos(petals_positions2, petals_color2);
+                draw_leaf_from_pos(petals_positions1, flower.petals.color1);
+                draw_leaf_from_pos(petals_positions2, flower.petals.color2);
 
             });
 
@@ -301,8 +303,7 @@ function Flower() {
                 return get_leaf_positions(value, flower.position, progress * carpel_size, carpel_nPoints, carpel_noiseFactor);
             })
             .map(function(value) {
-                var carpel_color = rgb_with_alpha( hsluvToP5Rgb(flower.carpel.color[0], flower.carpel.color[1], flower.carpel.color[2]), opacity);
-                draw_leaf_from_pos(value, carpel_color);
+                draw_leaf_from_pos(value, flower.carpel.color);
                 return value;
             });
 
@@ -315,10 +316,8 @@ function Flower() {
                 var center_pos_noisified = noisify_pos(value, progress * stamens_radius, stamens_noiseFactor);
                 var center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower.position, stamens_size/stamens_radius);
                 var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
-
-                var stamens_color = rgb_with_alpha(hsluvToP5Rgb(flower.stamens.color[0], flower.stamens.color[1], flower.stamens.color[2]), opacity);
-                draw_stem(flower.position, center_pos_closer, stamens_color, stamens_noiseFactor);
-                draw_leaf_from_pos(leaf_positions, stamens_color);
+                draw_stem(flower.position, center_pos_closer, flower.stamens.color, stamens_noiseFactor);
+                draw_leaf_from_pos(leaf_positions, flower.stamens.color);
                 return leaf_positions;
             });
 
@@ -347,40 +346,16 @@ function drawSplineLoop(points) {
     endShape();
 }
 
-
-function draw_leaf_from_pos(positions, color) {
-    fill(color);
-    stroke(rgb_with_alpha(hsluvToP5Rgb(p5RgbToHsluv(color)[0], p5RgbToHsluv(color)[1], p5RgbToHsluv(color)[2]*0.3), opacity * 0.3));
+function draw_leaf_from_pos(positions, colorHSLA) {
+    fill(hslaToP5RGBA(colorHSLA));
+    stroke(hslaToP5RGBA([colorHSLA[0], colorHSLA[1], colorHSLA[2] * 0.3, colorHSLA[3] * 0.3 ]));
     drawSplineLoop(positions);
     noStroke();
     noFill();    
 }
 
-function draw_leaf(center_pos, base_pos, size, nPoints, color, noiseFactor) { 
-    var positions = 
-        _.range(nPoints)
-        .map(function(value, index) {
-            return getPosOnCircle(center_pos, size, rotation, nPoints, index);
-        })
-        .map(function(value, index) {
-            return noisify_pos(value, size, noiseFactor);
-        });
-    
-    var closest_index_to_base_pos = positions.reduce(function(prevVal, elem, index, array) {
-        prevDistance = dist(array[prevVal].x, array[prevVal].y, base_pos.x, base_pos.y);
-        curDistance  = dist(elem.x, elem.y, base_pos.x, base_pos.y);
-        return prevDistance < curDistance ? prevVal : index;
-    }, 0);
-    
-    positions[closest_index_to_base_pos] = base_pos;
-
-    fill(color);
-    drawSplineLoop(positions);
-    noFill();
-}
-
-function draw_stem(fromPos, toPos, color, noiseFactor) {
-    stroke(color);
+function draw_stem(fromPos, toPos, colorHSLA, noiseFactor) {
+    stroke(hslaToP5RGBA(colorHSLA));
     var d = dist(fromPos.x, fromPos.y, toPos.x, toPos.y);
     curve(
         noisify_pos(fromPos, d, noiseFactor).x, noisify_pos(fromPos, d, noiseFactor).y, 
@@ -462,10 +437,14 @@ function hsluvToP5Rgb(h, s, l) {
     return color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
 }
 
+function hslaToP5RGBA(hslaColor) {
+    var rgb = hsluv.hsluvToRgb([hslaColor[0], hslaColor[1], hslaColor[2]]);
+    return color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255, hslaColor[3]);
+}
+
 function p5RgbToHsluv(color) {
     return hsluv.rgbToHsluv([color.levels[0], color.levels[1], color.levels[2]])
 }
-
 
 
 // general helpers
