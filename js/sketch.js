@@ -258,8 +258,8 @@ function Flower() {
                 return get_leaf_positions(value, flower.position, progress * sepals_size, sepals_nPoints, sepals_noiseFactor);
             })
             .map(function(value) {
-                // var sepals_color = rgb_with_alpha( hsluvToP5Rgb(flower.sepals.color[0], flower.sepals.color[1], flower.sepals.color[2]), opacity);
-                draw_leaf_from_pos(value, flower.sepals.color);
+                let sepals_color = [flower.sepals.color[0], flower.sepals.color[1], noisify(flower.sepals.color[2], hue_noise_scale, sepals_noiseFactor), flower.sepals.color[3] ];
+                draw_leaf_from_pos(value, sepals_color);
                 return value;
             });
 
@@ -270,10 +270,10 @@ function Flower() {
                 return getPosOnCircle(flower.position, progress * petals_radius, rotation, petals_amount, value);
             })
             .map(function(value) {
-                var petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size, petals_nPoints, petals_noiseFactor);
-                var petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
-                var petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], flower.petals.color1[2] * 0.6, flower.petals.color1[3] ];
-                var petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], flower.petals.color2[2] * 0.6, flower.petals.color2[3] ];
+                let petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size, petals_nPoints, petals_noiseFactor);
+                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
+                let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], hue_noise_scale, 1) * 0.6, flower.petals.color1[3] ];
+                let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], hue_noise_scale, 1) * 0.6, flower.petals.color2[3] ];
                 draw_leaf_from_pos(petals_positions1,  petals_color1);
                 draw_leaf_from_pos(petals_positions2,  petals_color2);
 
@@ -283,14 +283,16 @@ function Flower() {
         var petals_center_positions2 = 
             _.shuffle(_.range(petals_amount))
             .map(function(value) {
-                var petals2_rotation = rotation + Math.PI / petals_amount;
-                return getPosOnCircle(flower.position, progress * petals_radius * 0.4, petals2_rotation, petals_amount, value);
+                let petals2_rotation = rotation + Math.PI / petals_amount;
+                return getPosOnCircle(flower.position, progress * petals_radius * 0.66, petals2_rotation, petals_amount, value);
             })
             .map(function(value) {
-                var petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size * 0.7, petals_nPoints, petals_noiseFactor);
-                var petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.35, petals_nPoints, petals_noiseFactor);
-                draw_leaf_from_pos(petals_positions1, flower.petals.color1);
-                draw_leaf_from_pos(petals_positions2, flower.petals.color2);
+                let petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size * 0.8, petals_nPoints, petals_noiseFactor);
+                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.4, petals_nPoints, petals_noiseFactor);
+                let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], hue_noise_scale, 1), flower.petals.color1[3] ];
+                let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], hue_noise_scale, 1), flower.petals.color2[3] ];
+                draw_leaf_from_pos(petals_positions1, petals_color1);
+                draw_leaf_from_pos(petals_positions2, petals_color2);
 
             });
 
@@ -303,7 +305,8 @@ function Flower() {
                 return get_leaf_positions(value, flower.position, progress * carpel_size, carpel_nPoints, carpel_noiseFactor);
             })
             .map(function(value) {
-                draw_leaf_from_pos(value, flower.carpel.color);
+                let carpel_color = [flower.carpel.color[0], flower.carpel.color[1], noisify(flower.carpel.color[2], hue_noise_scale, carpel_noiseFactor), flower.carpel.color[3] ];
+                draw_leaf_from_pos(value, carpel_color);
                 return value;
             });
 
@@ -313,11 +316,12 @@ function Flower() {
                 return getPosOnCircle(flower.position, progress * stamens_radius, rotation, stamens_amount, value);
             })
             .map(function(value) {
-                var center_pos_noisified = noisify_pos(value, progress * stamens_radius, stamens_noiseFactor);
-                var center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower.position, stamens_size/stamens_radius);
-                var leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
-                draw_stem(flower.position, center_pos_closer, flower.stamens.color, stamens_noiseFactor);
-                draw_leaf_from_pos(leaf_positions, flower.stamens.color);
+                let center_pos_noisified = noisify_pos(value, progress * stamens_radius, stamens_noiseFactor);
+                let center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower.position, stamens_size/stamens_radius);
+                let leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
+                let stamens_color = [flower.stamens.color[0], flower.stamens.color[1], noisify(flower.stamens.color[2], hue_noise_scale, stamens_noiseFactor*0.5), flower.stamens.color[3] ];
+                draw_stem(flower.position, center_pos_closer, stamens_color, stamens_noiseFactor);
+                draw_leaf_from_pos(leaf_positions, stamens_color);
                 return leaf_positions;
             });
 
