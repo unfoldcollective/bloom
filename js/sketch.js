@@ -115,6 +115,7 @@ var carpel_noiseFactorMin = 0;
 var carpel_noiseFactorMax = 10;
 var carpel_noiseFactorStep = 0.1;
 
+var guiGlobal;
 var guiSepals;
 var guiPetals;
 var guiStamens;
