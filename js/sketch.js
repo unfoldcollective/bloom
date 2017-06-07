@@ -49,7 +49,10 @@ var sepals_noiseFactor = 1;
 var sepals_noiseFactorMin = 0;
 var sepals_noiseFactorMax = 10;
 var sepals_noiseFactorStep = 0.1;
-
+var sepals_curve_tightness = 0;
+var sepals_curve_tightnessMin = -10;
+var sepals_curve_tightnessMax = 10;
+var sepals_curve_tightnessStep = 0.1;
 
 var petals_amount = 6;
 var petals_radius = 150;
@@ -75,6 +78,10 @@ var petals_noiseFactor = 1;
 var petals_noiseFactorMin = 0;
 var petals_noiseFactorMax = 10;
 var petals_noiseFactorStep = 0.1;
+var petals_curve_tightness = 0;
+var petals_curve_tightnessMin = -10;
+var petals_curve_tightnessMax = 10;
+var petals_curve_tightnessStep = 0.1;
 
 var stamens_amount = 5;
 var stamens_amountMin = 5;
@@ -99,6 +106,10 @@ var stamens_noiseFactor = 1;
 var stamens_noiseFactorMin = 0;
 var stamens_noiseFactorMax = 10;
 var stamens_noiseFactorStep = 0.1;
+var stamens_curve_tightness = 0;
+var stamens_curve_tightnessMin = -10;
+var stamens_curve_tightnessMax = 10;
+var stamens_curve_tightnessStep = 0.1;
 
 var carpel_amount = 3;
 var carpel_amountMin = 3;
@@ -121,6 +132,10 @@ var carpel_noiseFactorMin = 0;
 var carpel_noiseFactorMax = 10;
 var carpel_noiseFactorStep = 0.1;
 var carpel_opacity = 240;
+var carpel_curve_tightness = 0;
+var carpel_curve_tightnessMin = -10;
+var carpel_curve_tightnessMax = 10;
+var carpel_curve_tightnessStep = 0.1;
 
 var guiGlobal;
 var guiSepals;
@@ -163,11 +178,11 @@ function setup() {
         'sepals_amount',
         'sepals_radius',
         'sepals_size',
-    
         'sepals_c_saturation',
         'sepals_c_lightness',
         'sepals_nPoints',
         'sepals_noiseFactor',
+        'sepals_curve_tightness',
     );
     guiPetals.addGlobals(
         'petals_amount',
@@ -179,6 +194,7 @@ function setup() {
         'petals_c2_lightness',
         'petals_nPoints',
         'petals_noiseFactor',
+        'petals_curve_tightness',
     );
     guiStamens.addGlobals(
         'stamens_amount',
@@ -189,6 +205,7 @@ function setup() {
         'stamens_c_lightness',
         'stamens_nPoints',
         'stamens_noiseFactor',
+        'stamens_curve_tightness',
     );
     guiCarpel.addGlobals(
         'carpel_amount',
@@ -198,6 +215,7 @@ function setup() {
         'carpel_c_lightness',
         'carpel_nPoints',
         'carpel_noiseFactor',
+        'carpel_curve_tightness',
     );
 
     set_gui_styles();
@@ -269,7 +287,9 @@ function Flower() {
             })
             .map(function(value) {
                 let sepals_color = [flower.sepals.color[0], flower.sepals.color[1], noisify(flower.sepals.color[2], lightness_noise_scale, sepals_noiseFactor), flower.sepals.color[3] ];
+                curveTightness(sepals_curve_tightness);
                 draw_leaf_from_pos(value, sepals_color);
+                curveTightness(curve_tightness);
                 return value;
             });
 
@@ -284,9 +304,10 @@ function Flower() {
                 let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
                 let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], lightness_noise_scale, 1) * 0.6, flower.petals.color1[3] ];
                 let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], lightness_noise_scale, 1) * 0.6, flower.petals.color2[3] ];
+                curveTightness(petals_curve_tightness);
                 draw_leaf_from_pos(petals_positions1,  petals_color1);
                 draw_leaf_from_pos(petals_positions2,  petals_color2);
-
+                curveTightness(curve_tightness);
             });
 
         // center level of petals
@@ -301,8 +322,10 @@ function Flower() {
                 let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.4, petals_nPoints, petals_noiseFactor);
                 let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], lightness_noise_scale, 1), flower.petals.color1[3] ];
                 let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], lightness_noise_scale, 1), flower.petals.color2[3] ];
+                curveTightness(petals_curve_tightness);
                 draw_leaf_from_pos(petals_positions1, petals_color1);
                 draw_leaf_from_pos(petals_positions2, petals_color2);
+                curveTightness(curve_tightness);
 
             });
 
@@ -316,7 +339,9 @@ function Flower() {
             })
             .map(function(value) {
                 let carpel_color = [flower.carpel.color[0], flower.carpel.color[1], noisify(flower.carpel.color[2], lightness_noise_scale, carpel_noiseFactor), flower.carpel.color[3] ];
+                curveTightness(carpel_curve_tightness);
                 draw_leaf_from_pos(value, carpel_color);
+                curveTightness(curve_tightness);
                 return value;
             });
 
@@ -330,8 +355,10 @@ function Flower() {
                 let center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower.position, stamens_size/stamens_radius);
                 let leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
                 let stamens_color = [flower.stamens.color[0], flower.stamens.color[1], noisify(flower.stamens.color[2], lightness_noise_scale, stamens_noiseFactor*0.5), flower.stamens.color[3] ];
+                curveTightness(stamens_curve_tightness);
                 draw_stem(flower.position, center_pos_closer, stamens_color, stamens_noiseFactor);
                 draw_leaf_from_pos(leaf_positions, stamens_color);
+                curveTightness(curve_tightness);
                 return leaf_positions;
             });
 
