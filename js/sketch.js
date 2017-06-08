@@ -221,8 +221,11 @@ function setup() {
         // 'carpel_noiseFactor',
         'carpel_curve_tightness',
     );
-
-    set_gui_styles();
+    
+    set_gui_styles('Global',  {"left": (width - 200 - 20)  + "px", "top":"400px"});
+    set_gui_styles('Stamens', {"left": (width - 200 - 20)  + "px"});
+    set_gui_styles('Carpel',  {"left": (width - 200 - 240) + "px"});
+    set_gui_styles('Petals',  {"left":"240px"});
 
     // Don't loop automatically
     noLoop();
@@ -241,12 +244,8 @@ function draw() {
     myFlower.draw();
 }
 
-function set_gui_styles() {
-    $( "div.qs_title_bar:contains('Global')" ).parent().css({"left": "initial", "right":"20px", "top":"initial", "bottom":"20px"});
-    $( "div.qs_title_bar:contains('Stamens')" ).parent().css({"left": "initial", "right":"20px"});
-    $( "div.qs_title_bar:contains('Carpel')" ).parent().css({"left": "initial", "right":"240px"});
-    $( "div.qs_title_bar:contains('Petals')" ).parent().css({"left": "initial", "left":"240px"});
-
+function set_gui_styles(title, styles) {
+    $( "div.qs_title_bar:contains('"+title+"')" ).parent().css(styles);
 }
 
 function get_global_settings() {
