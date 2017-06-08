@@ -281,7 +281,7 @@ function Flower(position, settings) {
     this.draw = function () {
         curveTightness(curve_tightness)
 
-        carpel_radius = carpel_size;
+        self.settings.carpel_radius = self.settings.carpel_size;
 
 
         var sepals_positions = 
