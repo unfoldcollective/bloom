@@ -148,6 +148,7 @@ var guiSepals;
 var guiPetals;
 var guiStamens;
 var guiCarpel;
+var guis;
 
 // Steps of 0.005-0.03 work best for most applications
 var seed = 0.0;
@@ -170,6 +171,14 @@ function setup() {
     guiPetals  = createGui('Petals');
     guiCarpel  = createGui('Carpel');
     guiStamens = createGui('Stamens');
+
+    guis = [
+        guiGlobal,
+        guiSepals,
+        guiPetals,
+        guiStamens,
+        guiCarpel,
+    ]
 
     guiGlobal.addGlobals(
         'opacity',
@@ -455,6 +464,18 @@ function noisify_pos(pos, scale, noiseFactor) {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+}
+
+function keyTyped() {
+  if (key === 'g') {
+    toggleGUIs();
+  }
+  // uncomment to prevent any default behavior
+  // return false;
+}
+
+function toggleGUIs() {
+    guis.map(value => value.toggleVisibility() );
 }
 
 // color helpers
