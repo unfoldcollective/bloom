@@ -30,6 +30,8 @@ var progressMax = 1;
 var progressStep = 0.01;
 
 var sepals_amount = 6;
+var sepals_amountMin = 3;
+var sepals_amountMax = 20;
 var sepals_radius = 250;
 var sepals_radiusMin = 0;
 var sepals_radiusMax = 500;
@@ -55,10 +57,14 @@ var sepals_curve_tightnessMax = 10;
 var sepals_curve_tightnessStep = 0.1;
 
 var petals_amount = 6;
+var petals_amountMin = 3;
+var petals_amountMax = 20;
 var petals_radius = 150;
 var petals_radiusMin = 0;
 var petals_radiusMax = 500;
 var petals_size = 150;
+var petals_sizeMin = 30;
+var petals_sizeMax = 200;
 var petals_c_saturation = 100;
 var petals_c_saturationMin = 0;
 var petals_c_saturationMax = 100;
@@ -86,7 +92,7 @@ var petals_curve_tightnessStep = 0.1;
 var stamens_amount = 5;
 var stamens_amountMin = 5;
 var stamens_amountMax = 100;
-var stamens_radius = 40;
+var stamens_radius = 100;
 var stamens_radiusMin = 30;
 var stamens_radiusMax = 200;
 var stamens_size = 10;
@@ -319,14 +325,22 @@ function Flower() {
             })
             .map(function(value) {
                 let petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size * 0.8, petals_nPoints, petals_noiseFactor);
-                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.4, petals_nPoints, petals_noiseFactor);
+                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
+                let interValue = flower.position;
+                // let petals_positions2_interspersed = _.flatMap(petals_positions2, (value, index, array) => [value, interValue]);
+                let petals_positions2_interspersed = _.flatMap(petals_positions2, (value, index, array) =>
+                     index % 2 == 0 // check for the last item
+                     ? [value, interValue]
+                     : value
+                );
+
                 let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], lightness_noise_scale, 1), flower.petals.color1[3] ];
                 let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], lightness_noise_scale, 1), flower.petals.color2[3] ];
                 curveTightness(petals_curve_tightness);
                 draw_leaf_from_pos(petals_positions1, petals_color1);
-                draw_leaf_from_pos(petals_positions2, petals_color2);
+                draw_leaf_from_pos(petals_positions2_interspersed, petals_color2);
                 curveTightness(curve_tightness);
-
+                return value;
             });
 
         var carpel_positions = 
