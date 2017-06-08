@@ -29,7 +29,7 @@ var progressMin = 0;
 var progressMax = 1;
 var progressStep = 0.01;
 
-var sepals_amount = 6;
+var sepals_amount = 3;
 var sepals_amountMin = 3;
 var sepals_amountMax = 20;
 var sepals_radius = 250;
@@ -56,8 +56,8 @@ var sepals_curve_tightnessMin = -10;
 var sepals_curve_tightnessMax = 10;
 var sepals_curve_tightnessStep = 0.1;
 
-var petals_amount = 6;
-var petals_amountMin = 3;
+var petals_amount = 0;
+var petals_amountMin = 0;
 var petals_amountMax = 20;
 var petals_radius = 150;
 var petals_radiusMin = 0;
@@ -89,8 +89,8 @@ var petals_curve_tightnessMin = -10;
 var petals_curve_tightnessMax = 10;
 var petals_curve_tightnessStep = 0.1;
 
-var stamens_amount = 5;
-var stamens_amountMin = 5;
+var stamens_amount = 0;
+var stamens_amountMin = 0;
 var stamens_amountMax = 100;
 var stamens_radius = 100;
 var stamens_radiusMin = 30;
@@ -117,8 +117,8 @@ var stamens_curve_tightnessMin = -10;
 var stamens_curve_tightnessMax = 10;
 var stamens_curve_tightnessStep = 0.1;
 
-var carpel_amount = 3;
-var carpel_amountMin = 3;
+var carpel_amount = 0;
+var carpel_amountMin = 0;
 var carpel_amountMax = 5;
 var carpel_radius;
 var carpel_size = 10;
@@ -226,73 +226,71 @@ function setup() {
 
     set_gui_styles();
 
-
-    myFlower = new Flower();
-
     // Don't loop automatically
     noLoop();
+
+    myFlower = new Flower(createVector(width / 2, height / 2));
 }
 
-function Flower() {
-    this.position = createVector(width / 2, height / 2);  
+function Flower(position) {
+    let self = this;
+    self.position = position;
+
+    self.sepals = {};
+    self.sepals.color = [
+        background_hue, 
+        sepals_c_saturation, 
+        sepals_c_lightness,
+        opacity,
+    ];
+    
+    self.petals = {};
+    self.petals.color1 = [
+        random_hue_excluding(background_hue, hue_exclude_range),
+        petals_c_saturation,
+        coin_flip(petals_c_lightness, complement_linear(petals_c_lightness, 100)),
+        opacity,
+    ];
+    self.petals.color2 = [
+        normalise_to_hue(noisify(self.petals.color1[0], hue_noise_scale, petals_noiseFactor)),
+        petals_c_saturation,
+        complement_linear(self.petals.color1[2], 100),
+        opacity,
+    ];
+
+    self.carpel = {};
+    self.carpel.color = [
+        complement_circular(self.petals.color1[0]),
+        carpel_c_saturation,
+        carpel_c_lightness,
+        carpel_opacity,
+    ];
+
+    self.stamens = {};
+    self.stamens.color = [
+        complement_circular(self.petals.color1[0]),
+        stamens_c_saturation,
+        stamens_c_lightness,
+        opacity,
+    ];
 
     // Draw Flower
     this.draw = function () {
         curveTightness(curve_tightness)
-        var flower = this;
 
         carpel_radius = carpel_size;
-
-        flower.sepals = {};
-        flower.sepals.color = [
-            background_hue, 
-            sepals_c_saturation, 
-            sepals_c_lightness,
-            opacity,
-        ];
-        
-        flower.petals = {};
-        flower.petals.color1 = [
-            random_hue_excluding(background_hue, hue_exclude_range),
-            petals_c_saturation,
-            coin_flip(petals_c_lightness, complement_linear(petals_c_lightness, 100)),
-            opacity,
-        ];
-        flower.petals.color2 = [
-            normalise_to_hue(noisify(flower.petals.color1[0], hue_noise_scale, petals_noiseFactor)),
-            petals_c_saturation,
-            complement_linear(flower.petals.color1[2], 100),
-            opacity,
-        ];
-
-        flower.carpel = {};
-        flower.carpel.color = [
-            complement_circular(flower.petals.color1[0]),
-            carpel_c_saturation,
-            carpel_c_lightness,
-            carpel_opacity,
-        ];
-
-        flower.stamens = {};
-        flower.stamens.color = [
-            complement_circular(flower.petals.color1[0]),
-            stamens_c_saturation,
-            stamens_c_lightness,
-            opacity,
-        ];
-
 
         var sepals_positions = 
             _.shuffle(_.range(sepals_amount))
             .map(function(value) {
                 var sepals_rotation = rotation + Math.PI / sepals_amount;
-                return getPosOnCircle(flower.position, progress * sepals_radius, sepals_rotation, sepals_amount, value);
+                return getPosOnCircle(self.position, progress * sepals_radius, sepals_rotation, sepals_amount, value);
             })
             .map(function(value) {
-                return get_leaf_positions(value, flower.position, progress * sepals_size, sepals_nPoints, sepals_noiseFactor);
+                return get_leaf_positions(value, self.position, progress * sepals_size, sepals_nPoints, sepals_noiseFactor);
             })
             .map(function(value) {
-                let sepals_color = [flower.sepals.color[0], flower.sepals.color[1], noisify(flower.sepals.color[2], lightness_noise_scale, sepals_noiseFactor), flower.sepals.color[3] ];
+                let sepals_color = [self.sepals.color[0], self.sepals.color[1], noisify(self.sepals.color[2], lightness_noise_scale, sepals_noiseFactor), self.sepals.color[3] ];
                 curveTightness(sepals_curve_tightness);
                 draw_leaf_from_pos(value, sepals_color);
                 curveTightness(curve_tightness);
@@ -303,13 +301,13 @@ function Flower() {
         var petals_center_positions = 
             _.shuffle(_.range(petals_amount))
             .map(function(value) {
-                return getPosOnCircle(flower.position, progress * petals_radius, rotation, petals_amount, value);
+                return getPosOnCircle(self.position, progress * petals_radius, rotation, petals_amount, value);
             })
             .map(function(value) {
-                let petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size, petals_nPoints, petals_noiseFactor);
-                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
-                let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], lightness_noise_scale, 1) * 0.6, flower.petals.color1[3] ];
-                let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], lightness_noise_scale, 1) * 0.6, flower.petals.color2[3] ];
+                let petals_positions1  = get_leaf_positions(value, self.position, progress * petals_size, petals_nPoints, petals_noiseFactor);
+                let petals_positions2 = get_leaf_positions(value, self.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
+                let petals_color1 = [self.petals.color1[0], self.petals.color1[1], noisify(self.petals.color1[2], lightness_noise_scale, 1) * 0.6, self.petals.color1[3] ];
+                let petals_color2 = [self.petals.color2[0], self.petals.color2[1], noisify(self.petals.color2[2], lightness_noise_scale, 1) * 0.6, self.petals.color2[3] ];
                 curveTightness(petals_curve_tightness);
                 draw_leaf_from_pos(petals_positions1,  petals_color1);
                 draw_leaf_from_pos(petals_positions2,  petals_color2);
@@ -321,21 +319,20 @@ function Flower() {
             _.shuffle(_.range(petals_amount))
             .map(function(value) {
                 let petals2_rotation = rotation + Math.PI / petals_amount;
-                return getPosOnCircle(flower.position, progress * petals_radius * 0.66, petals2_rotation, petals_amount, value);
+                return getPosOnCircle(self.position, progress * petals_radius * 0.66, petals2_rotation, petals_amount, value);
             })
             .map(function(value) {
-                let petals_positions1  = get_leaf_positions(value, flower.position, progress * petals_size * 0.8, petals_nPoints, petals_noiseFactor);
-                let petals_positions2 = get_leaf_positions(value, flower.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
-                let interValue = flower.position;
-                // let petals_positions2_interspersed = _.flatMap(petals_positions2, (value, index, array) => [value, interValue]);
+                let petals_positions1  = get_leaf_positions(value, self.position, progress * petals_size * 0.8, petals_nPoints, petals_noiseFactor);
+                let petals_positions2 = get_leaf_positions(value, self.position, progress * petals_size * 0.5, petals_nPoints, petals_noiseFactor);
+                let interValue = self.position;
                 let petals_positions2_interspersed = _.flatMap(petals_positions2, (value, index, array) =>
-                     index % 2 == 0 // check for the last item
+                     index % 2 == 0 // check for even items
                      ? [value, interValue]
                      : value
                 );
 
-                let petals_color1 = [flower.petals.color1[0], flower.petals.color1[1], noisify(flower.petals.color1[2], lightness_noise_scale, 1), flower.petals.color1[3] ];
-                let petals_color2 = [flower.petals.color2[0], flower.petals.color2[1], noisify(flower.petals.color2[2], lightness_noise_scale, 1), flower.petals.color2[3] ];
+                let petals_color1 = [self.petals.color1[0], self.petals.color1[1], noisify(self.petals.color1[2], lightness_noise_scale, 1), self.petals.color1[3] ];
+                let petals_color2 = [self.petals.color2[0], self.petals.color2[1], noisify(self.petals.color2[2], lightness_noise_scale, 1), self.petals.color2[3] ];
                 curveTightness(petals_curve_tightness);
                 draw_leaf_from_pos(petals_positions1, petals_color1);
                 draw_leaf_from_pos(petals_positions2_interspersed, petals_color2);
@@ -346,13 +343,13 @@ function Flower() {
         var carpel_positions = 
             _.shuffle(_.range(carpel_amount))
             .map(function(value) {
-                return getPosOnCircle(flower.position, progress * carpel_radius, rotation, carpel_amount, value);
+                return getPosOnCircle(self.position, progress * carpel_radius, rotation, carpel_amount, value);
             })
             .map(function(value) {
-                return get_leaf_positions(value, flower.position, progress * carpel_size, carpel_nPoints, carpel_noiseFactor);
+                return get_leaf_positions(value, self.position, progress * carpel_size, carpel_nPoints, carpel_noiseFactor);
             })
             .map(function(value) {
-                let carpel_color = [flower.carpel.color[0], flower.carpel.color[1], noisify(flower.carpel.color[2], lightness_noise_scale, carpel_noiseFactor), flower.carpel.color[3] ];
+                let carpel_color = [self.carpel.color[0], self.carpel.color[1], noisify(self.carpel.color[2], lightness_noise_scale, carpel_noiseFactor), self.carpel.color[3] ];
                 curveTightness(carpel_curve_tightness);
                 draw_leaf_from_pos(value, carpel_color);
                 curveTightness(curve_tightness);
@@ -362,15 +359,15 @@ function Flower() {
         var stamens_positions = 
             _.shuffle(_.range(stamens_amount))
             .map(function(value) {
-                return getPosOnCircle(flower.position, progress * stamens_radius, rotation, stamens_amount, value);
+                return getPosOnCircle(self.position, progress * stamens_radius, rotation, stamens_amount, value);
             })
             .map(function(value) {
                 let center_pos_noisified = noisify_pos(value, progress * stamens_radius, stamens_noiseFactor);
-                let center_pos_closer = p5.Vector.lerp(center_pos_noisified, flower.position, stamens_size/stamens_radius);
+                let center_pos_closer = p5.Vector.lerp(center_pos_noisified, self.position, stamens_size/stamens_radius);
                 let leaf_positions = get_leaf_positions(center_pos_noisified, center_pos_closer, progress * stamens_size, stamens_nPoints, stamens_noiseFactor);
-                let stamens_color = [flower.stamens.color[0], flower.stamens.color[1], noisify(flower.stamens.color[2], lightness_noise_scale, stamens_noiseFactor*0.5), flower.stamens.color[3] ];
+                let stamens_color = [self.stamens.color[0], self.stamens.color[1], noisify(self.stamens.color[2], lightness_noise_scale, stamens_noiseFactor*0.5), self.stamens.color[3] ];
                 curveTightness(stamens_curve_tightness);
-                draw_stem(flower.position, center_pos_closer, stamens_color, stamens_noiseFactor);
+                draw_stem(self.position, center_pos_closer, stamens_color, stamens_noiseFactor);
                 draw_leaf_from_pos(leaf_positions, stamens_color);
                 curveTightness(curve_tightness);
                 return leaf_positions;
