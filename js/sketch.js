@@ -376,6 +376,10 @@ function Flower(position, settings) {
             });
 
     }
+
+    this.update_settings = function (new_settings) {
+        this.settings = new_settings;
+    }
 }
 
 
@@ -386,7 +390,7 @@ function draw() {
     background(hsluvToP5Rgb(background_hue, background_saturation, background_lightness));
 
     let globalSettings = get_global_settings();
-    myFlower.settings = globalSettings;
+    myFlower.update_settings(globalSettings);
     myFlower.draw();
 }
 
