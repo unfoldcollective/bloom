@@ -56,8 +56,8 @@ var sepals_curve_tightnessMin = -10;
 var sepals_curve_tightnessMax = 10;
 var sepals_curve_tightnessStep = 0.1;
 
-var petals_amount = 0;
-var petals_amountMin = 0;
+var petals_amount = 6;
+var petals_amountMin = 3;
 var petals_amountMax = 20;
 var petals_radius = 150;
 var petals_radiusMin = 0;
@@ -89,8 +89,8 @@ var petals_curve_tightnessMin = -20;
 var petals_curve_tightnessMax = 10;
 var petals_curve_tightnessStep = 0.1;
 
-var stamens_amount = 0;
-var stamens_amountMin = 0;
+var stamens_amount = 40;
+var stamens_amountMin = 5;
 var stamens_amountMax = 100;
 var stamens_radius = 100;
 var stamens_radiusMin = 30;
@@ -117,8 +117,8 @@ var stamens_curve_tightnessMin = -10;
 var stamens_curve_tightnessMax = 10;
 var stamens_curve_tightnessStep = 0.1;
 
-var carpel_amount = 0;
-var carpel_amountMin = 0;
+var carpel_amount = 3;
+var carpel_amountMin = 3;
 var carpel_amountMax = 5;
 var carpel_radius;
 var carpel_size = 10;
@@ -133,9 +133,9 @@ var carpel_c_lightnessMax = 100;
 var carpel_nPoints = 9;
 var carpel_nPointsMin = 3;
 var carpel_nPointsMax = 10;
-var carpel_noiseFactor = 1;
+var carpel_noiseFactor = 0;
 var carpel_noiseFactorMin = 0;
-var carpel_noiseFactorMax = 10;
+var carpel_noiseFactorMax = 1;
 var carpel_noiseFactorStep = 0.1;
 var carpel_opacity = 240;
 var carpel_curve_tightness = 0;
@@ -193,8 +193,6 @@ function setup() {
         'sepals_amount',
         'sepals_radius',
         'sepals_size',
-        'sepals_c_saturation',
-        'sepals_c_lightness',
         'sepals_nPoints',
         'sepals_noiseFactor',
         'sepals_curve_tightness',
@@ -203,10 +201,6 @@ function setup() {
         'petals_amount',
         'petals_radius',
         'petals_size',
-        'petals_c_saturation',
-        'petals_c_lightness',
-        'petals_c2_saturation',
-        'petals_c2_lightness',
         'petals_nPoints',
         'petals_noiseFactor',
         'petals_curve_tightness',
@@ -215,9 +209,6 @@ function setup() {
         'stamens_amount',
         'stamens_radius',
         'stamens_size',
-        'stamens_c_hue',
-        'stamens_c_saturation',
-        'stamens_c_lightness',
         'stamens_nPoints',
         'stamens_noiseFactor',
         'stamens_curve_tightness',
@@ -226,10 +217,8 @@ function setup() {
         'carpel_amount',
         // 'carpel_radius',
         'carpel_size',
-        'carpel_c_saturation',
-        'carpel_c_lightness',
         'carpel_nPoints',
-        'carpel_noiseFactor',
+        // 'carpel_noiseFactor',
         'carpel_curve_tightness',
     );
 
