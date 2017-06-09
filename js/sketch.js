@@ -298,3 +298,21 @@ function get_global_settings() {
         'carpel_curve_tightness': carpel_curve_tightness,
     };
 }
+
+// event handlers
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+
+function keyTyped() {
+  if (key === 'g') {
+    toggleGUIs();
+  }
+  // uncomment to prevent any default behavior
+  // return false;
+}
+
+function toggleGUIs() {
+    guis.map(value => value.toggleVisibility() );
+}

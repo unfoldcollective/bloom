@@ -208,24 +208,6 @@ function noisify_pos(pos, scale, noiseFactor) {
     return createVector( noisify(pos.x, scale, noiseFactor), noisify(pos.y, scale, noiseFactor) );
 }
 
-// event handlers
-
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
-
-function keyTyped() {
-  if (key === 'g') {
-    toggleGUIs();
-  }
-  // uncomment to prevent any default behavior
-  // return false;
-}
-
-function toggleGUIs() {
-    guis.map(value => value.toggleVisibility() );
-}
-
 // color helpers
 
 function random_hue_excluding(background_hue, hue_exclude_range) {
